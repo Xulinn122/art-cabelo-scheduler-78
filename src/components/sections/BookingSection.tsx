@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useServices, useAvailableSlots, useCreateAppointment } from '@/hooks/useAppointments';
+import { useBarbers } from '@/hooks/useBarbers';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { CalendarIcon, CheckCircle, AlertCircle, Loader2, User } from 'lucide-react';
 import { format, addDays, isBefore, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -20,11 +21,13 @@ const bookingSchema = z.object({
 
 export function BookingSection() {
   const { services, loading: servicesLoading } = useServices();
+  const { barbers, loading: barbersLoading } = useBarbers();
   const { user } = useAuth();
   const { createAppointment, loading: creating, error, setError } = useCreateAppointment();
   
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [barberId, setBarberId] = useState('');
   const [serviceId, setServiceId] = useState('');
   const [date, setDate] = useState<Date | undefined>();
   const [time, setTime] = useState('');
@@ -32,9 +35,12 @@ export function BookingSection() {
   const [validationErrors, setValidationErrors] = useState<{ name?: string; phone?: string }>({});
   
   const selectedService = services.find(s => s.id === serviceId);
+  const selectedBarber = barbers.find(b => b.id === barberId);
   const dateString = date ? format(date, 'yyyy-MM-dd') : '';
+  
   const { availableSlots, loading: slotsLoading, refetch } = useAvailableSlots(
     dateString,
+    barberId || null,
     selectedService?.duration_minutes || 30
   );
 
@@ -61,7 +67,7 @@ export function BookingSection() {
       }
     }
 
-    if (!serviceId || !date || !time) {
+    if (!barberId || !serviceId || !date || !time) {
       setError('Por favor, preencha todos os campos');
       return;
     }
@@ -70,6 +76,7 @@ export function BookingSection() {
       name,
       phone,
       serviceId,
+      barberId,
       dateString,
       time,
       user?.id
@@ -79,6 +86,7 @@ export function BookingSection() {
       setSuccess(true);
       setName('');
       setPhone('');
+      setBarberId('');
       setServiceId('');
       setDate(undefined);
       setTime('');
@@ -167,6 +175,52 @@ export function BookingSection() {
               )}
             </div>
 
+            {/* Barber Selection */}
+            <div className="space-y-3">
+              <Label className="text-foreground">Escolha seu Barbeiro</Label>
+              {barbersLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : barbers.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Nenhum barbeiro disponível no momento
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {barbers.map((barber) => (
+                    <button
+                      key={barber.id}
+                      type="button"
+                      onClick={() => {
+                        setBarberId(barber.id);
+                        setTime(''); // Reset time when barber changes
+                      }}
+                      className={cn(
+                        "p-4 rounded-xl border-2 transition-all duration-300 text-center",
+                        barberId === barber.id
+                          ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
+                          : "border-border/50 bg-background/30 hover:border-primary/50"
+                      )}
+                    >
+                      <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                        {barber.photo_url ? (
+                          <img 
+                            src={barber.photo_url} 
+                            alt={barber.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-8 h-8 text-muted-foreground" />
+                        )}
+                      </div>
+                      <p className="font-medium text-sm">{barber.name}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="space-y-2">
               <Label className="text-foreground">Serviço</Label>
               <Select value={serviceId} onValueChange={setServiceId}>
@@ -208,8 +262,7 @@ export function BookingSection() {
                     }}
                     disabled={(date) => 
                       isBefore(date, today) || 
-                      isBefore(maxDate, date) ||
-                      date.getDay() === 0 // Closed on Sundays
+                      isBefore(maxDate, date)
                     }
                     locale={ptBR}
                   />
@@ -217,16 +270,19 @@ export function BookingSection() {
               </Popover>
             </div>
 
-            {date && (
+            {date && barberId && (
               <div className="space-y-2">
-                <Label className="text-foreground">Horário Disponível</Label>
+                <Label className="text-foreground">
+                  Horário Disponível
+                  {selectedBarber && <span className="text-primary ml-1">({selectedBarber.name})</span>}
+                </Label>
                 {slotsLoading ? (
                   <div className="flex items-center justify-center py-4">
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
                   </div>
                 ) : availableSlots.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    Nenhum horário disponível nesta data
+                    Nenhum horário disponível nesta data para este barbeiro
                   </p>
                 ) : (
                   <div className="grid grid-cols-4 gap-2">
@@ -247,12 +303,18 @@ export function BookingSection() {
               </div>
             )}
 
+            {date && !barberId && (
+              <p className="text-sm text-muted-foreground text-center py-2">
+                Selecione um barbeiro para ver os horários disponíveis
+              </p>
+            )}
+
             <Button
               type="submit"
               variant="premium"
               size="lg"
               className="w-full"
-              disabled={creating || !name || !phone || !serviceId || !date || !time}
+              disabled={creating || !name || !phone || !barberId || !serviceId || !date || !time}
             >
               {creating ? (
                 <>

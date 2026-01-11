@@ -1,10 +1,23 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAppointments } from '@/hooks/useAppointments';
+import { BarberManagement } from '@/components/admin/BarberManagement';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Scissors, ArrowLeft, Check, X, Trash2, Loader2, Calendar, Phone, User } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Scissors, 
+  ArrowLeft, 
+  Check, 
+  X, 
+  Trash2, 
+  Loader2, 
+  Calendar, 
+  Phone, 
+  User,
+  Users
+} from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -12,6 +25,7 @@ export default function Admin() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { appointments, loading, updateStatus, deleteAppointment } = useAdminAppointments();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('appointments');
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -57,50 +71,73 @@ export default function Admin() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-serif font-bold mb-8">Agendamentos</h1>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="appointments" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Agendamentos
+            </TabsTrigger>
+            <TabsTrigger value="barbers" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Barbeiros
+            </TabsTrigger>
+          </TabsList>
 
-        {appointments.length === 0 ? (
-          <div className="text-center py-16 glass-card rounded-xl">
-            <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Nenhum agendamento encontrado</p>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {appointments.map((apt) => (
-              <div key={apt.id} className="p-6 rounded-xl glass-card flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Cliente</p>
-                    <p className="font-medium flex items-center gap-2"><User className="w-4 h-4 text-primary" />{apt.client_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">WhatsApp</p>
-                    <p className="font-medium flex items-center gap-2"><Phone className="w-4 h-4 text-primary" />{apt.client_phone}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Serviço</p>
-                    <p className="font-medium">{apt.services?.name || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Data & Hora</p>
-                    <p className="font-medium">{format(parseISO(apt.appointment_date), "dd/MM/yyyy", { locale: ptBR })} às {formatTime(apt.appointment_time)}</p>
-                  </div>
-                </div>
+          <TabsContent value="appointments" className="space-y-6">
+            <h1 className="text-3xl font-serif font-bold">Agendamentos</h1>
 
-                <div className="flex items-center gap-3">
-                  <Badge className={statusColors[apt.status]}>{statusLabels[apt.status]}</Badge>
-                  {apt.status === 'pending' && (
-                    <Button variant="gold" size="sm" onClick={() => updateStatus(apt.id, 'confirmed')}><Check className="w-4 h-4" /></Button>
-                  )}
-                  {apt.status !== 'cancelled' && (
-                    <Button variant="outline" size="sm" onClick={() => updateStatus(apt.id, 'cancelled')}><X className="w-4 h-4" /></Button>
-                  )}
-                  <Button variant="destructive" size="sm" onClick={() => deleteAppointment(apt.id)}><Trash2 className="w-4 h-4" /></Button>
-                </div>
+            {appointments.length === 0 ? (
+              <div className="text-center py-16 glass-card rounded-xl">
+                <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">Nenhum agendamento encontrado</p>
               </div>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="grid gap-4">
+                {appointments.map((apt) => (
+                  <div key={apt.id} className="p-6 rounded-xl glass-card flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Cliente</p>
+                        <p className="font-medium flex items-center gap-2"><User className="w-4 h-4 text-primary" />{apt.client_name}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">WhatsApp</p>
+                        <p className="font-medium flex items-center gap-2"><Phone className="w-4 h-4 text-primary" />{apt.client_phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Barbeiro</p>
+                        <p className="font-medium">{apt.barbers?.name || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Serviço</p>
+                        <p className="font-medium">{apt.services?.name || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Data & Hora</p>
+                        <p className="font-medium">{format(parseISO(apt.appointment_date), "dd/MM/yyyy", { locale: ptBR })} às {formatTime(apt.appointment_time)}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <Badge className={statusColors[apt.status]}>{statusLabels[apt.status]}</Badge>
+                      {apt.status === 'pending' && (
+                        <Button variant="gold" size="sm" onClick={() => updateStatus(apt.id, 'confirmed')}><Check className="w-4 h-4" /></Button>
+                      )}
+                      {apt.status !== 'cancelled' && (
+                        <Button variant="outline" size="sm" onClick={() => updateStatus(apt.id, 'cancelled')}><X className="w-4 h-4" /></Button>
+                      )}
+                      <Button variant="destructive" size="sm" onClick={() => deleteAppointment(apt.id)}><Trash2 className="w-4 h-4" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="barbers">
+            <BarberManagement />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
