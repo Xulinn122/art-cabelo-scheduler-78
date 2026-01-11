@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          barber_id: string | null
           client_name: string
           client_phone: string
           created_at: string
@@ -30,6 +31,7 @@ export type Database = {
         Insert: {
           appointment_date: string
           appointment_time: string
+          barber_id?: string | null
           client_name: string
           client_phone: string
           created_at?: string
@@ -42,6 +44,7 @@ export type Database = {
         Update: {
           appointment_date?: string
           appointment_time?: string
+          barber_id?: string | null
           client_name?: string
           client_phone?: string
           created_at?: string
@@ -53,6 +56,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "appointments_barber_id_fkey"
+            columns: ["barber_id"]
+            isOneToOne: false
+            referencedRelation: "barbers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "appointments_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
@@ -60,6 +70,68 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      barber_schedules: {
+        Row: {
+          barber_id: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_active: boolean
+          start_time: string
+        }
+        Insert: {
+          barber_id: string
+          day_of_week: number
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          start_time?: string
+        }
+        Update: {
+          barber_id?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "barber_schedules_barber_id_fkey"
+            columns: ["barber_id"]
+            isOneToOne: false
+            referencedRelation: "barbers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      barbers: {
+        Row: {
+          bio: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          photo_url: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          photo_url?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          photo_url?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

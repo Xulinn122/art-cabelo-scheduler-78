@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Barber } from './useBarbers';
 
 export interface Service {
   id: string;
@@ -15,12 +16,14 @@ export interface Appointment {
   client_name: string;
   client_phone: string;
   service_id: string | null;
+  barber_id: string | null;
   appointment_date: string;
   appointment_time: string;
   status: string;
   user_id: string | null;
   created_at: string;
   services?: Service;
+  barbers?: Barber;
 }
 
 export function useServices() {
@@ -46,27 +49,53 @@ export function useServices() {
   return { services, loading };
 }
 
-export function useAvailableSlots(date: string, serviceDuration: number = 30) {
+export function useAvailableSlots(
+  date: string, 
+  barberId: string | null,
+  serviceDuration: number = 30
+) {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (date) {
-      fetchAvailableSlots();
+  const fetchAvailableSlots = useCallback(async () => {
+    if (!date || !barberId) {
+      setAvailableSlots([]);
+      return;
     }
-  }, [date, serviceDuration]);
 
-  const fetchAvailableSlots = async () => {
     setLoading(true);
     
-    // Working hours: 9:00 - 19:00
-    const allSlots = generateTimeSlots('09:00', '19:00', 30);
+    // Get the day of week for the selected date
+    const selectedDate = new Date(date + 'T12:00:00');
+    const dayOfWeek = selectedDate.getDay();
+
+    // Fetch barber's schedule for this day
+    const { data: scheduleData, error: scheduleError } = await supabase
+      .from('barber_schedules')
+      .select('*')
+      .eq('barber_id', barberId)
+      .eq('day_of_week', dayOfWeek)
+      .single();
+
+    if (scheduleError || !scheduleData || !scheduleData.is_active) {
+      setAvailableSlots([]);
+      setLoading(false);
+      return;
+    }
+
+    // Generate slots based on barber's working hours
+    const allSlots = generateTimeSlots(
+      scheduleData.start_time.slice(0, 5), 
+      scheduleData.end_time.slice(0, 5), 
+      30
+    );
     
-    // Fetch booked appointments for the date
+    // Fetch booked appointments for this barber on this date
     const { data: bookedAppointments, error } = await supabase
       .from('appointments')
       .select('appointment_time')
       .eq('appointment_date', date)
+      .eq('barber_id', barberId)
       .neq('status', 'cancelled');
 
     if (error) {
@@ -80,7 +109,11 @@ export function useAvailableSlots(date: string, serviceDuration: number = 30) {
     
     setAvailableSlots(available);
     setLoading(false);
-  };
+  }, [date, barberId, serviceDuration]);
+
+  useEffect(() => {
+    fetchAvailableSlots();
+  }, [fetchAvailableSlots]);
 
   return { availableSlots, loading, refetch: fetchAvailableSlots };
 }
@@ -116,6 +149,7 @@ export function useCreateAppointment() {
     clientName: string,
     clientPhone: string,
     serviceId: string,
+    barberId: string,
     appointmentDate: string,
     appointmentTime: string,
     userId?: string
@@ -130,6 +164,7 @@ export function useCreateAppointment() {
           client_name: clientName,
           client_phone: clientPhone,
           service_id: serviceId,
+          barber_id: barberId,
           appointment_date: appointmentDate,
           appointment_time: appointmentTime,
           user_id: userId || null,
@@ -172,13 +207,14 @@ export function useAdminAppointments() {
       .from('appointments')
       .select(`
         *,
-        services (*)
+        services (*),
+        barbers (*)
       `)
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true });
 
     if (!error && data) {
-      setAppointments(data);
+      setAppointments(data as Appointment[]);
     }
     setLoading(false);
   };
