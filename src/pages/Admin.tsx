@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAppointments } from '@/hooks/useAppointments';
 import { BarberManagement } from '@/components/admin/BarberManagement';
+import { AdminManagement } from '@/components/admin/AdminManagement';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,7 +17,8 @@ import {
   Calendar, 
   Phone, 
   User,
-  Users
+  Users,
+  Shield
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -72,7 +74,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-lg grid-cols-3">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Agendamentos
@@ -80,6 +82,10 @@ export default function Admin() {
             <TabsTrigger value="barbers" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Barbeiros
+            </TabsTrigger>
+            <TabsTrigger value="admins" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Admins
             </TabsTrigger>
           </TabsList>
 
@@ -136,6 +142,10 @@ export default function Admin() {
 
           <TabsContent value="barbers">
             <BarberManagement />
+          </TabsContent>
+
+          <TabsContent value="admins">
+            <AdminManagement />
           </TabsContent>
         </Tabs>
       </main>
