@@ -77,16 +77,14 @@ export function Navbar({ onBookClick }: NavbarProps) {
               Contato
             </button>
             
-            {user ? (
+            {user && isAdmin ? (
               <div className="flex items-center gap-4">
-                {isAdmin && (
-                  <Link to="/admin">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Shield className="w-4 h-4" />
-                      Admin
-                    </Button>
-                  </Link>
-                )}
+                <Link to="/admin">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Shield className="w-4 h-4" />
+                    Admin
+                  </Button>
+                </Link>
                 <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
                   <LogOut className="w-4 h-4" />
                   Sair
@@ -95,8 +93,8 @@ export function Navbar({ onBookClick }: NavbarProps) {
             ) : (
               <Link to="/auth">
                 <Button variant="ghost" size="sm" className="gap-2">
-                  <User className="w-4 h-4" />
-                  Entrar
+                  <Shield className="w-4 h-4" />
+                  Admin
                 </Button>
               </Link>
             )}
@@ -142,16 +140,14 @@ export function Navbar({ onBookClick }: NavbarProps) {
                 Contato
               </button>
               
-              {user ? (
+              {user && isAdmin ? (
                 <>
-                  {isAdmin && (
-                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start gap-2">
-                        <Shield className="w-4 h-4" />
-                        Painel Admin
-                      </Button>
-                    </Link>
-                  )}
+                  <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Shield className="w-4 h-4" />
+                      Painel Admin
+                    </Button>
+                  </Link>
                   <Button variant="ghost" onClick={handleSignOut} className="justify-start gap-2">
                     <LogOut className="w-4 h-4" />
                     Sair
@@ -160,8 +156,8 @@ export function Navbar({ onBookClick }: NavbarProps) {
               ) : (
                 <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start gap-2">
-                    <User className="w-4 h-4" />
-                    Entrar
+                    <Shield className="w-4 h-4" />
+                    Admin
                   </Button>
                 </Link>
               )}
