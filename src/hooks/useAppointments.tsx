@@ -83,11 +83,11 @@ export function useAvailableSlots(
       return;
     }
 
-    // Generate slots based on barber's working hours
+    // Generate slots based on barber's working hours (1 hour intervals)
     const allSlots = generateTimeSlots(
       scheduleData.start_time.slice(0, 5), 
       scheduleData.end_time.slice(0, 5), 
-      30
+      60
     );
     
     // Fetch booked appointments for this barber on this date
