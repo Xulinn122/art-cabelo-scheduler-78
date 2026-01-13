@@ -1,4 +1,5 @@
 import { Award, Clock, Star } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 export function AboutSection() {
   const features = [
@@ -26,6 +27,10 @@ export function AboutSection() {
       
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
+          {/* Small logo */}
+          <div className="mb-6">
+            <img src={logo} alt="Art Cabelo" className="h-20 w-auto mx-auto opacity-80" />
+          </div>
           <span className="text-primary text-sm tracking-widest uppercase font-medium">
             Sobre Nós
           </span>

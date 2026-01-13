@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Scissors } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 interface HeroSectionProps {
   onBookClick: () => void;
@@ -19,32 +20,15 @@ export function HeroSection({ onBookClick }: HeroSectionProps) {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent via-primary/50 to-transparent" />
       
       <div className="relative z-10 container mx-auto px-4 text-center">
-        {/* Logo/Icon */}
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full border-2 border-primary/30 mb-8 animate-fade-up">
-          <Scissors className="w-10 h-10 text-primary" />
+        {/* Logo */}
+        <div className="mb-8 animate-fade-up">
+          <img src={logo} alt="Art Cabelo Barbearia" className="h-48 md:h-64 lg:h-72 w-auto mx-auto" />
         </div>
-        
-        {/* Main heading */}
-        <h1 
-          className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 animate-fade-up"
-          style={{ animationDelay: '0.1s' }}
-        >
-          <span className="text-foreground">Art</span>{' '}
-          <span className="text-gradient-gold">Cabelo</span>
-        </h1>
-        
-        {/* Subtitle */}
-        <p 
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 animate-fade-up font-light tracking-wide"
-          style={{ animationDelay: '0.2s' }}
-        >
-          BARBEARIA
-        </p>
         
         {/* Tagline */}
         <p 
           className="text-xl md:text-2xl text-foreground/80 max-w-2xl mx-auto mb-12 animate-fade-up font-serif italic"
-          style={{ animationDelay: '0.3s' }}
+          style={{ animationDelay: '0.2s' }}
         >
           "Onde a tradição encontra o estilo moderno"
         </p>
