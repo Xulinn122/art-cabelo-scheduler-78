@@ -1,6 +1,7 @@
 import { useServices } from '@/hooks/useAppointments';
 import { Scissors, Wind, Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import logoServices from '@/assets/logo-services.png';
 
 const serviceIcons: Record<string, React.ElementType> = {
   'Corte Masculino': Scissors,
@@ -38,6 +39,10 @@ export function ServicesSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
+          {/* Logo */}
+          <div className="mb-8">
+            <img src={logoServices} alt="Art Cabelo Barbearia" className="h-40 md:h-52 w-auto mx-auto" />
+          </div>
           <span className="text-primary text-sm tracking-widest uppercase font-medium">
             Nossos Serviços
           </span>
