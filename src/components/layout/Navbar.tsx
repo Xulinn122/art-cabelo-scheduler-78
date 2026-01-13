@@ -50,8 +50,11 @@ export function Navbar({ onBookClick }: NavbarProps) {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <img src={logo} alt="Art Cabelo" className="h-12 w-auto" />
+            <span className="text-xl font-serif font-bold">
+              Art <span className="text-gradient-gold">Cabelo</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
