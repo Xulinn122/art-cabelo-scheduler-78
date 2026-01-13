@@ -16,6 +16,8 @@ export interface BarberSchedule {
   day_of_week: number;
   start_time: string;
   end_time: string;
+  break_start: string | null;
+  break_end: string | null;
   is_active: boolean;
 }
 
@@ -185,13 +187,21 @@ export function useBarberSchedules(barberId: string | null) {
     dayOfWeek: number, 
     startTime: string, 
     endTime: string, 
-    isActive: boolean
+    isActive: boolean,
+    breakStart: string | null = null,
+    breakEnd: string | null = null
   ) => {
     if (!barberId) return { error: new Error('No barber selected') };
 
     const { data, error } = await supabase
       .from('barber_schedules')
-      .update({ start_time: startTime, end_time: endTime, is_active: isActive })
+      .update({ 
+        start_time: startTime, 
+        end_time: endTime, 
+        is_active: isActive,
+        break_start: breakStart,
+        break_end: breakEnd
+      })
       .eq('barber_id', barberId)
       .eq('day_of_week', dayOfWeek)
       .select()
@@ -222,7 +232,13 @@ export function useBarberSchedules(barberId: string | null) {
     const promises = defaultSchedules.map(({ day, start, end, active }) =>
       supabase
         .from('barber_schedules')
-        .update({ start_time: start, end_time: end, is_active: active })
+        .update({ 
+          start_time: start, 
+          end_time: end, 
+          is_active: active,
+          break_start: null,
+          break_end: null
+        })
         .eq('barber_id', barberId)
         .eq('day_of_week', day)
     );

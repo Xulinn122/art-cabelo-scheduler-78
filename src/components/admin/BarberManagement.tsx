@@ -25,7 +25,7 @@ import {
   Save
 } from 'lucide-react';
 import { toast } from 'sonner';
-
+import { Coffee } from 'lucide-react';
 const DAY_NAMES = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 export function BarberManagement() {
@@ -360,17 +360,27 @@ interface ScheduleDialogProps {
 function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
   const { schedules, loading, updateSchedule, resetToDefault, refetch } = useBarberSchedules(barber.id);
   const [saving, setSaving] = useState(false);
-  const [localSchedules, setLocalSchedules] = useState<Record<number, { start: string; end: string; active: boolean }>>({});
+  const [localSchedules, setLocalSchedules] = useState<Record<number, { 
+    start: string; 
+    end: string; 
+    active: boolean;
+    breakStart: string;
+    breakEnd: string;
+    hasBreak: boolean;
+  }>>({});
 
   // Initialize local schedules when schedules load
   useState(() => {
     if (schedules.length > 0) {
-      const initial: Record<number, { start: string; end: string; active: boolean }> = {};
+      const initial: Record<number, { start: string; end: string; active: boolean; breakStart: string; breakEnd: string; hasBreak: boolean }> = {};
       schedules.forEach(s => {
         initial[s.day_of_week] = {
           start: s.start_time.slice(0, 5),
           end: s.end_time.slice(0, 5),
-          active: s.is_active
+          active: s.is_active,
+          breakStart: s.break_start?.slice(0, 5) || '12:00',
+          breakEnd: s.break_end?.slice(0, 5) || '13:00',
+          hasBreak: !!(s.break_start && s.break_end)
         };
       });
       setLocalSchedules(initial);
@@ -385,13 +395,16 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
       return {
         start: schedule.start_time.slice(0, 5),
         end: schedule.end_time.slice(0, 5),
-        active: schedule.is_active
+        active: schedule.is_active,
+        breakStart: schedule.break_start?.slice(0, 5) || '12:00',
+        breakEnd: schedule.break_end?.slice(0, 5) || '13:00',
+        hasBreak: !!(schedule.break_start && schedule.break_end)
       };
     }
-    return { start: '09:00', end: '19:00', active: true };
+    return { start: '09:00', end: '19:00', active: true, breakStart: '12:00', breakEnd: '13:00', hasBreak: false };
   };
 
-  const updateLocalSchedule = (day: number, field: 'start' | 'end' | 'active', value: string | boolean) => {
+  const updateLocalSchedule = (day: number, field: string, value: string | boolean) => {
     const current = getScheduleForDay(day);
     setLocalSchedules(prev => ({
       ...prev,
@@ -408,7 +421,14 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
     const days = [0, 1, 2, 3, 4, 5, 6];
     for (const day of days) {
       const schedule = getScheduleForDay(day);
-      await updateSchedule(day, schedule.start + ':00', schedule.end + ':00', schedule.active);
+      await updateSchedule(
+        day, 
+        schedule.start + ':00', 
+        schedule.end + ':00', 
+        schedule.active,
+        schedule.hasBreak ? schedule.breakStart + ':00' : null,
+        schedule.hasBreak ? schedule.breakEnd + ':00' : null
+      );
     }
     
     await refetch();
@@ -442,11 +462,11 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Horários de {barber.name}</DialogTitle>
           <DialogDescription>
-            Configure os horários de trabalho para cada dia da semana
+            Configure os horários de trabalho e intervalos para cada dia da semana
           </DialogDescription>
         </DialogHeader>
 
@@ -460,37 +480,76 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
                   schedule.active ? 'border-border bg-card' : 'border-border/30 bg-muted/30'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Switch
-                      checked={schedule.active}
-                      onCheckedChange={(checked) => updateLocalSchedule(day, 'active', checked)}
-                    />
-                    <span className={`font-medium ${!schedule.active ? 'text-muted-foreground' : ''}`}>
-                      {DAY_NAMES[day]}
-                    </span>
-                  </div>
-                  
-                  {schedule.active && (
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="time"
-                        value={schedule.start}
-                        onChange={(e) => updateLocalSchedule(day, 'start', e.target.value)}
-                        className="w-28"
+                <div className="flex flex-col gap-3">
+                  {/* Day header and main hours */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Switch
+                        checked={schedule.active}
+                        onCheckedChange={(checked) => updateLocalSchedule(day, 'active', checked)}
                       />
-                      <span className="text-muted-foreground">até</span>
-                      <Input
-                        type="time"
-                        value={schedule.end}
-                        onChange={(e) => updateLocalSchedule(day, 'end', e.target.value)}
-                        className="w-28"
-                      />
+                      <span className={`font-medium ${!schedule.active ? 'text-muted-foreground' : ''}`}>
+                        {DAY_NAMES[day]}
+                      </span>
                     </div>
-                  )}
-                  
-                  {!schedule.active && (
-                    <span className="text-sm text-muted-foreground">Folga</span>
+                    
+                    {schedule.active && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="time"
+                          value={schedule.start}
+                          onChange={(e) => updateLocalSchedule(day, 'start', e.target.value)}
+                          className="w-24"
+                        />
+                        <span className="text-muted-foreground text-sm">até</span>
+                        <Input
+                          type="time"
+                          value={schedule.end}
+                          onChange={(e) => updateLocalSchedule(day, 'end', e.target.value)}
+                          className="w-24"
+                        />
+                      </div>
+                    )}
+                    
+                    {!schedule.active && (
+                      <span className="text-sm text-muted-foreground">Folga</span>
+                    )}
+                  </div>
+
+                  {/* Break/Interval section */}
+                  {schedule.active && (
+                    <div className="flex items-center justify-between pl-10 pt-2 border-t border-border/50">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={schedule.hasBreak}
+                          onCheckedChange={(checked) => updateLocalSchedule(day, 'hasBreak', checked)}
+                        />
+                        <Coffee className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Intervalo</span>
+                      </div>
+                      
+                      {schedule.hasBreak && (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="time"
+                            value={schedule.breakStart}
+                            onChange={(e) => updateLocalSchedule(day, 'breakStart', e.target.value)}
+                            className="w-24"
+                          />
+                          <span className="text-muted-foreground text-sm">até</span>
+                          <Input
+                            type="time"
+                            value={schedule.breakEnd}
+                            onChange={(e) => updateLocalSchedule(day, 'breakEnd', e.target.value)}
+                            className="w-24"
+                          />
+                        </div>
+                      )}
+                      
+                      {!schedule.hasBreak && (
+                        <span className="text-xs text-muted-foreground">Sem intervalo</span>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
