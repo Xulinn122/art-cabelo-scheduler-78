@@ -1,4 +1,5 @@
-import { Scissors, Instagram, Facebook } from 'lucide-react';
+import { Instagram, Facebook } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -9,10 +10,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <Scissors className="w-5 h-5 text-primary" />
-            <span className="text-lg font-serif font-bold">
-              Art <span className="text-gradient-gold">Cabelo</span>
-            </span>
+            <img src={logo} alt="Art Cabelo" className="h-16 w-auto" />
           </div>
 
           {/* Social Links */}

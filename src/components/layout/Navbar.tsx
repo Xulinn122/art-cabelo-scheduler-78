@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Scissors, Menu, X, User, LogOut, Shield } from 'lucide-react';
+import { Menu, X, LogOut, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 
 interface NavbarProps {
   onBookClick?: () => void;
@@ -50,10 +51,7 @@ export function Navbar({ onBookClick }: NavbarProps) {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <Scissors className="w-6 h-6 text-primary transition-transform group-hover:rotate-45" />
-            <span className="text-xl font-serif font-bold">
-              Art <span className="text-gradient-gold">Cabelo</span>
-            </span>
+            <img src={logo} alt="Art Cabelo" className="h-12 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
