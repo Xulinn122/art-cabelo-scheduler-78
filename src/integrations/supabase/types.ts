@@ -74,6 +74,8 @@ export type Database = {
       barber_schedules: {
         Row: {
           barber_id: string
+          break_end: string | null
+          break_start: string | null
           day_of_week: number
           end_time: string
           id: string
@@ -82,6 +84,8 @@ export type Database = {
         }
         Insert: {
           barber_id: string
+          break_end?: string | null
+          break_start?: string | null
           day_of_week: number
           end_time?: string
           id?: string
@@ -90,6 +94,8 @@ export type Database = {
         }
         Update: {
           barber_id?: string
+          break_end?: string | null
+          break_start?: string | null
           day_of_week?: number
           end_time?: string
           id?: string

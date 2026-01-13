@@ -89,6 +89,17 @@ export function useAvailableSlots(
       scheduleData.end_time.slice(0, 5), 
       60
     );
+
+    // Filter out break time slots
+    let availableSlots = allSlots;
+    if (scheduleData.break_start && scheduleData.break_end) {
+      const breakStart = scheduleData.break_start.slice(0, 5);
+      const breakEnd = scheduleData.break_end.slice(0, 5);
+      availableSlots = allSlots.filter(slot => {
+        const slotTime = slot.slice(0, 5);
+        return slotTime < breakStart || slotTime >= breakEnd;
+      });
+    }
     
     // Fetch booked appointments for this barber on this date
     const { data: bookedAppointments, error } = await supabase
@@ -105,7 +116,7 @@ export function useAvailableSlots(
     }
 
     const bookedTimes = bookedAppointments?.map(apt => apt.appointment_time) || [];
-    const available = allSlots.filter(slot => !bookedTimes.includes(slot));
+    const available = availableSlots.filter(slot => !bookedTimes.includes(slot));
     
     setAvailableSlots(available);
     setLoading(false);
