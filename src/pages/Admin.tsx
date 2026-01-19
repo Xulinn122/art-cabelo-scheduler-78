@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAdminAppointments } from '@/hooks/useAppointments';
 import { BarberManagement } from '@/components/admin/BarberManagement';
 import { AdminManagement } from '@/components/admin/AdminManagement';
+import { ServiceManagement } from '@/components/admin/ServiceManagement';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,7 +19,8 @@ import {
   Phone, 
   User,
   Users,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -74,18 +76,22 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              Agendamentos
+              <span className="hidden sm:inline">Agendamentos</span>
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">Serviços</span>
             </TabsTrigger>
             <TabsTrigger value="barbers" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              Barbeiros
+              <span className="hidden sm:inline">Barbeiros</span>
             </TabsTrigger>
             <TabsTrigger value="admins" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              Admins
+              <span className="hidden sm:inline">Admins</span>
             </TabsTrigger>
           </TabsList>
 
@@ -138,6 +144,10 @@ export default function Admin() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="services">
+            <ServiceManagement />
           </TabsContent>
 
           <TabsContent value="barbers">
