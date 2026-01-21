@@ -5,6 +5,7 @@ import { useAdminAppointments } from '@/hooks/useAppointments';
 import { BarberManagement } from '@/components/admin/BarberManagement';
 import { AdminManagement } from '@/components/admin/AdminManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
+import { SettingsManagement } from '@/components/admin/SettingsManagement';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,7 +21,8 @@ import {
   User,
   Users,
   Shield,
-  Sparkles
+  Sparkles,
+  Settings
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -76,7 +78,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               <span className="hidden sm:inline">Agendamentos</span>
@@ -92,6 +94,10 @@ export default function Admin() {
             <TabsTrigger value="admins" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Admins</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Configurações</span>
             </TabsTrigger>
           </TabsList>
 
@@ -156,6 +162,10 @@ export default function Admin() {
 
           <TabsContent value="admins">
             <AdminManagement />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SettingsManagement />
           </TabsContent>
         </Tabs>
       </main>
