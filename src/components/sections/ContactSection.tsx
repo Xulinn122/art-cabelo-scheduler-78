@@ -1,31 +1,34 @@
 import { MapPin, Phone, Clock, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSettings } from '@/hooks/useSettings';
 
 export function ContactSection() {
+  const { settings } = useSettings();
+
   const contactInfo = [
     {
       icon: MapPin,
       title: 'Endereço',
-      content: 'Rua da Barbearia, 123 - Centro',
-      subtitle: 'São Paulo, SP',
+      content: settings.address,
+      subtitle: settings.city,
     },
     {
       icon: Clock,
       title: 'Horário de Funcionamento',
-      content: 'Segunda a Sábado',
-      subtitle: '09:00 - 19:00',
+      content: `Seg-Sex: ${settings.hours_weekday}`,
+      subtitle: `Sáb: ${settings.hours_saturday} | Dom: ${settings.hours_sunday}`,
     },
     {
       icon: Phone,
       title: 'Telefone',
-      content: '(11) 99999-9999',
+      content: settings.phone,
       subtitle: 'WhatsApp disponível',
     },
   ];
 
   const handleWhatsAppClick = () => {
-    const message = encodeURIComponent('Olá! Gostaria de mais informações sobre a Barbearia Art Cabelo.');
-    window.open(`https://wa.me/5511999999999?text=${message}`, '_blank');
+    const message = encodeURIComponent('Olá! Gostaria de mais informações sobre a Barbearia Art Cabelos.');
+    window.open(`https://wa.me/${settings.whatsapp}?text=${message}`, '_blank');
   };
 
   return (
