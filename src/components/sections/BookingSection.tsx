@@ -87,6 +87,10 @@ export function BookingSection() {
     );
 
     if (result.success) {
+      setLastBookedServiceId(serviceId);
+      setLastBookedBarberId(barberId);
+      setLastBookedDate(dateString);
+      setLastBookedTime(time);
       setSuccess(true);
       setName('');
       setPhone('');
