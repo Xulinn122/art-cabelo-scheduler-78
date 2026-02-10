@@ -314,7 +314,7 @@ export function BookingSection() {
                     Nenhum horário disponível nesta data para este barbeiro
                   </p>
                 ) : (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {availableSlots.map((slot) => (
                       <Button
                         key={slot}
