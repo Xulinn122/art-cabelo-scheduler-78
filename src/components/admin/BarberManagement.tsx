@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,15 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Coffee } from 'lucide-react';
+
+// Generate time options every 30 minutes (00:00 to 23:30)
+const TIME_OPTIONS: string[] = [];
+for (let h = 0; h < 24; h++) {
+  for (let m = 0; m < 60; m += 30) {
+    TIME_OPTIONS.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+  }
+}
+
 const DAY_NAMES = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 export function BarberManagement() {
@@ -494,20 +504,16 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
                     </div>
                     
                     {schedule.active && (
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="time"
-                          value={schedule.start}
-                          onChange={(e) => updateLocalSchedule(day, 'start', e.target.value)}
-                          className="w-24"
-                        />
+                       <div className="flex items-center gap-2">
+                        <Select value={schedule.start} onValueChange={(val) => updateLocalSchedule(day, 'start', val)}>
+                          <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                          <SelectContent>{TIME_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                        </Select>
                         <span className="text-muted-foreground text-sm">até</span>
-                        <Input
-                          type="time"
-                          value={schedule.end}
-                          onChange={(e) => updateLocalSchedule(day, 'end', e.target.value)}
-                          className="w-24"
-                        />
+                        <Select value={schedule.end} onValueChange={(val) => updateLocalSchedule(day, 'end', val)}>
+                          <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                          <SelectContent>{TIME_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                        </Select>
                       </div>
                     )}
                     
@@ -530,19 +536,15 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
                       
                       {schedule.hasBreak && (
                         <div className="flex items-center gap-2">
-                          <Input
-                            type="time"
-                            value={schedule.breakStart}
-                            onChange={(e) => updateLocalSchedule(day, 'breakStart', e.target.value)}
-                            className="w-24"
-                          />
+                          <Select value={schedule.breakStart} onValueChange={(val) => updateLocalSchedule(day, 'breakStart', val)}>
+                            <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                            <SelectContent>{TIME_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                          </Select>
                           <span className="text-muted-foreground text-sm">até</span>
-                          <Input
-                            type="time"
-                            value={schedule.breakEnd}
-                            onChange={(e) => updateLocalSchedule(day, 'breakEnd', e.target.value)}
-                            className="w-24"
-                          />
+                          <Select value={schedule.breakEnd} onValueChange={(val) => updateLocalSchedule(day, 'breakEnd', val)}>
+                            <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                            <SelectContent>{TIME_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                          </Select>
                         </div>
                       )}
                       
