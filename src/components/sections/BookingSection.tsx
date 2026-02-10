@@ -106,15 +106,6 @@ export function BookingSection() {
     return timeString.slice(0, 5);
   };
 
-  const formatTimeRange = (timeString: string, durationMinutes: number) => {
-    const [h, m] = timeString.split(':').map(Number);
-    const startTotal = h * 60 + m;
-    const endTotal = startTotal + durationMinutes;
-    const endH = Math.floor(endTotal / 60).toString().padStart(2, '0');
-    const endM = (endTotal % 60).toString().padStart(2, '0');
-    return `${timeString.slice(0, 5)} - ${endH}:${endM}`;
-  };
-
   const confirmedService = services.find(s => s.id === lastBookedServiceId);
   const confirmedBarber = barbers.find(b => b.id === lastBookedBarberId);
 
