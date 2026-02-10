@@ -536,19 +536,15 @@ function ScheduleDialog({ barber, isOpen, onClose }: ScheduleDialogProps) {
                       
                       {schedule.hasBreak && (
                         <div className="flex items-center gap-2">
-                          <Input
-                            type="time"
-                            value={schedule.breakStart}
-                            onChange={(e) => updateLocalSchedule(day, 'breakStart', e.target.value)}
-                            className="w-24"
-                          />
+                          <Select value={schedule.breakStart} onValueChange={(val) => updateLocalSchedule(day, 'breakStart', val)}>
+                            <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                            <SelectContent>{TIME_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                          </Select>
                           <span className="text-muted-foreground text-sm">até</span>
-                          <Input
-                            type="time"
-                            value={schedule.breakEnd}
-                            onChange={(e) => updateLocalSchedule(day, 'breakEnd', e.target.value)}
-                            className="w-24"
-                          />
+                          <Select value={schedule.breakEnd} onValueChange={(val) => updateLocalSchedule(day, 'breakEnd', val)}>
+                            <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                            <SelectContent>{TIME_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                          </Select>
                         </div>
                       )}
                       
