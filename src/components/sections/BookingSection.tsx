@@ -32,6 +32,10 @@ export function BookingSection() {
   const [date, setDate] = useState<Date | undefined>();
   const [time, setTime] = useState('');
   const [success, setSuccess] = useState(false);
+  const [lastBookedServiceId, setLastBookedServiceId] = useState('');
+  const [lastBookedBarberId, setLastBookedBarberId] = useState('');
+  const [lastBookedDate, setLastBookedDate] = useState('');
+  const [lastBookedTime, setLastBookedTime] = useState('');
   const [validationErrors, setValidationErrors] = useState<{ name?: string; phone?: string }>({});
   
   const selectedService = services.find(s => s.id === serviceId);
