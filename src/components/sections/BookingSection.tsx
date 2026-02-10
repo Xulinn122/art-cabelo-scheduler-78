@@ -98,19 +98,40 @@ export function BookingSection() {
     return timeString.slice(0, 5);
   };
 
+  const confirmedService = services.find(s => s.id === lastBookedServiceId);
+  const confirmedBarber = barbers.find(b => b.id === lastBookedBarberId);
+
   if (success) {
     return (
       <section id="booking" className="py-24 relative">
         <div className="container mx-auto px-4">
           <div className="max-w-lg mx-auto text-center">
-            <div className="p-8 rounded-2xl glass-card gold-glow">
-              <CheckCircle className="w-16 h-16 text-success mx-auto mb-6" />
-              <h3 className="text-2xl font-serif font-bold mb-4">
-                Agendamento Confirmado!
+            <div className="p-8 rounded-2xl glass-card gold-glow space-y-6">
+              <CheckCircle className="w-16 h-16 text-success mx-auto" />
+              <h3 className="text-2xl font-serif font-bold">
+                Pedido de Agendamento Enviado!
               </h3>
-              <p className="text-muted-foreground mb-6">
-                Seu horário foi reservado com sucesso. Aguardamos você!
+              <p className="text-muted-foreground">
+                Seu pedido foi registrado com sucesso. Aguarde a confirmação.
               </p>
+              
+              {(confirmedBarber || confirmedService || lastBookedDate || lastBookedTime) && (
+                <div className="bg-background/50 rounded-xl p-4 space-y-2 text-sm text-left">
+                  {confirmedBarber && (
+                    <p><span className="text-muted-foreground">Barbeiro:</span> <span className="font-medium">{confirmedBarber.name}</span></p>
+                  )}
+                  {confirmedService && (
+                    <p><span className="text-muted-foreground">Serviço:</span> <span className="font-medium">{confirmedService.name}</span></p>
+                  )}
+                  {lastBookedDate && (
+                    <p><span className="text-muted-foreground">Data:</span> <span className="font-medium">{format(new Date(lastBookedDate + 'T12:00:00'), "dd 'de' MMMM", { locale: ptBR })}</span></p>
+                  )}
+                  {lastBookedTime && (
+                    <p><span className="text-muted-foreground">Horário:</span> <span className="font-medium">{lastBookedTime.slice(0, 5)}</span></p>
+                  )}
+                </div>
+              )}
+
               <Button 
                 variant="gold-outline"
                 onClick={() => setSuccess(false)}
