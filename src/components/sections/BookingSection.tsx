@@ -106,6 +106,15 @@ export function BookingSection() {
     return timeString.slice(0, 5);
   };
 
+  const formatTimeRange = (timeString: string, durationMinutes: number) => {
+    const [h, m] = timeString.split(':').map(Number);
+    const startTotal = h * 60 + m;
+    const endTotal = startTotal + durationMinutes;
+    const endH = Math.floor(endTotal / 60).toString().padStart(2, '0');
+    const endM = (endTotal % 60).toString().padStart(2, '0');
+    return `${timeString.slice(0, 5)} - ${endH}:${endM}`;
+  };
+
   const confirmedService = services.find(s => s.id === lastBookedServiceId);
   const confirmedBarber = barbers.find(b => b.id === lastBookedBarberId);
 
@@ -135,7 +144,7 @@ export function BookingSection() {
                     <p><span className="text-muted-foreground">Data:</span> <span className="font-medium">{format(new Date(lastBookedDate + 'T12:00:00'), "dd 'de' MMMM", { locale: ptBR })}</span></p>
                   )}
                   {lastBookedTime && (
-                    <p><span className="text-muted-foreground">Horário:</span> <span className="font-medium">{lastBookedTime.slice(0, 5)}</span></p>
+                    <p><span className="text-muted-foreground">Horário:</span> <span className="font-medium">{confirmedService ? formatTimeRange(lastBookedTime, confirmedService.duration_minutes) : lastBookedTime.slice(0, 5)}</span></p>
                   )}
                 </div>
               )}
@@ -314,7 +323,7 @@ export function BookingSection() {
                     Nenhum horário disponível nesta data para este barbeiro
                   </p>
                 ) : (
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     {availableSlots.map((slot) => (
                       <Button
                         key={slot}
@@ -324,7 +333,7 @@ export function BookingSection() {
                         onClick={() => setTime(slot)}
                         className="text-sm"
                       >
-                        {formatTime(slot)}
+                        {selectedService ? formatTimeRange(slot, selectedService.duration_minutes) : formatTime(slot)}
                       </Button>
                     ))}
                   </div>
