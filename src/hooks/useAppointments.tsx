@@ -209,10 +209,6 @@ export function useAdminAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
   const fetchAppointments = async () => {
     const { data, error } = await supabase
       .from('appointments')
@@ -229,6 +225,31 @@ export function useAdminAppointments() {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchAppointments();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('admin-appointments')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'appointments',
+        },
+        () => {
+          fetchAppointments();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase
