@@ -135,7 +135,7 @@ export function BookingSection() {
                     <p><span className="text-muted-foreground">Data:</span> <span className="font-medium">{format(new Date(lastBookedDate + 'T12:00:00'), "dd 'de' MMMM", { locale: ptBR })}</span></p>
                   )}
                   {lastBookedTime && (
-                    <p><span className="text-muted-foreground">Horário:</span> <span className="font-medium">{confirmedService ? formatTimeRange(lastBookedTime, confirmedService.duration_minutes) : lastBookedTime.slice(0, 5)}</span></p>
+                    <p><span className="text-muted-foreground">Horário:</span> <span className="font-medium">{lastBookedTime.slice(0, 5)}</span></p>
                   )}
                 </div>
               )}
