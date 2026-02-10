@@ -83,28 +83,28 @@ export function useAvailableSlots(
       return;
     }
 
-    // Generate slots based on barber's working hours (1 hour intervals)
+    // Generate slots based on barber's working hours (30 min intervals)
     const allSlots = generateTimeSlots(
       scheduleData.start_time.slice(0, 5), 
       scheduleData.end_time.slice(0, 5), 
-      60
+      30
     );
 
     // Filter out break time slots
-    let availableSlots = allSlots;
+    let filteredSlots = allSlots;
     if (scheduleData.break_start && scheduleData.break_end) {
       const breakStart = scheduleData.break_start.slice(0, 5);
       const breakEnd = scheduleData.break_end.slice(0, 5);
-      availableSlots = allSlots.filter(slot => {
+      filteredSlots = allSlots.filter(slot => {
         const slotTime = slot.slice(0, 5);
         return slotTime < breakStart || slotTime >= breakEnd;
       });
     }
     
-    // Fetch booked appointments for this barber on this date
+    // Fetch booked appointments for this barber on this date (with service duration)
     const { data: bookedAppointments, error } = await supabase
       .from('appointments')
-      .select('appointment_time')
+      .select('appointment_time, services(duration_minutes)')
       .eq('appointment_date', date)
       .eq('barber_id', barberId)
       .neq('status', 'cancelled');
@@ -115,8 +115,54 @@ export function useAvailableSlots(
       return;
     }
 
-    const bookedTimes = bookedAppointments?.map(apt => apt.appointment_time) || [];
-    const available = availableSlots.filter(slot => !bookedTimes.includes(slot));
+    // Build a set of all occupied 30-min blocks
+    const occupiedSlots = new Set<string>();
+    bookedAppointments?.forEach(apt => {
+      const dur = (apt.services as any)?.duration_minutes || 30;
+      const blocksNeeded = Math.ceil(dur / 30);
+      const [h, m] = apt.appointment_time.split(':').map(Number);
+      for (let i = 0; i < blocksNeeded; i++) {
+        const totalMin = h * 60 + m + i * 30;
+        const bh = Math.floor(totalMin / 60);
+        const bm = totalMin % 60;
+        occupiedSlots.add(`${bh.toString().padStart(2, '0')}:${bm.toString().padStart(2, '0')}:00`);
+      }
+    });
+
+    // Filter: a slot is available only if ALL blocks needed for the new service are free
+    const endTime = scheduleData.end_time.slice(0, 5);
+    const [endH, endM] = endTime.split(':').map(Number);
+    const endTotalMin = endH * 60 + endM;
+    const blocksNeeded = Math.ceil(serviceDuration / 30);
+
+    const available = filteredSlots.filter(slot => {
+      const [sh, sm] = slot.split(':').map(Number);
+      const startMin = sh * 60 + sm;
+      // Check service doesn't exceed working hours
+      if (startMin + serviceDuration > endTotalMin) return false;
+      // Check all required blocks are free
+      for (let i = 0; i < blocksNeeded; i++) {
+        const totalMin = startMin + i * 30;
+        const bh = Math.floor(totalMin / 60);
+        const bm = totalMin % 60;
+        const blockKey = `${bh.toString().padStart(2, '0')}:${bm.toString().padStart(2, '0')}:00`;
+        if (occupiedSlots.has(blockKey)) return false;
+      }
+      // Check blocks don't fall in break time
+      if (scheduleData.break_start && scheduleData.break_end) {
+        const breakStart = scheduleData.break_start.slice(0, 5);
+        const breakEnd = scheduleData.break_end.slice(0, 5);
+        const [bsH, bsM] = breakStart.split(':').map(Number);
+        const [beH, beM] = breakEnd.split(':').map(Number);
+        const breakStartMin = bsH * 60 + bsM;
+        const breakEndMin = beH * 60 + beM;
+        for (let i = 0; i < blocksNeeded; i++) {
+          const blockMin = startMin + i * 30;
+          if (blockMin >= breakStartMin && blockMin < breakEndMin) return false;
+        }
+      }
+      return true;
+    });
     
     setAvailableSlots(available);
     setLoading(false);
