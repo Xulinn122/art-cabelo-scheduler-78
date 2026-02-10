@@ -324,7 +324,7 @@ export function BookingSection() {
                         onClick={() => setTime(slot)}
                         className="text-sm"
                       >
-                        {selectedService ? formatTimeRange(slot, selectedService.duration_minutes) : formatTime(slot)}
+                        {formatTime(slot)}
                       </Button>
                     ))}
                   </div>
