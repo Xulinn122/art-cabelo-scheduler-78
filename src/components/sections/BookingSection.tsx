@@ -252,7 +252,7 @@ export function BookingSection() {
 
             <div className="space-y-2">
               <Label className="text-foreground">Serviço</Label>
-              <Select value={serviceId} onValueChange={setServiceId}>
+              <Select value={serviceId} onValueChange={(val) => { setServiceId(val); setTime(''); }}>
                 <SelectTrigger className="bg-background/50 border-border focus:border-primary">
                   <SelectValue placeholder="Selecione o serviço" />
                 </SelectTrigger>
