@@ -23,6 +23,7 @@ interface Service {
   duration_minutes: number;
   price: number;
   is_active: boolean;
+  show_on_homepage: boolean;
 }
 
 export function ServiceManagement() {
@@ -38,6 +39,7 @@ export function ServiceManagement() {
     duration_minutes: 30,
     price: 0,
     is_active: true,
+    show_on_homepage: true,
   });
 
   useEffect(() => {
@@ -70,6 +72,7 @@ export function ServiceManagement() {
         duration_minutes: service.duration_minutes,
         price: service.price,
         is_active: service.is_active,
+        show_on_homepage: service.show_on_homepage,
       });
     } else {
       setEditingService(null);
@@ -79,6 +82,7 @@ export function ServiceManagement() {
         duration_minutes: 30,
         price: 0,
         is_active: true,
+        show_on_homepage: true,
       });
     }
     setDialogOpen(true);
@@ -106,6 +110,7 @@ export function ServiceManagement() {
             duration_minutes: formData.duration_minutes,
             price: formData.price,
             is_active: formData.is_active,
+            show_on_homepage: formData.show_on_homepage,
           })
           .eq('id', editingService.id);
 
@@ -120,6 +125,7 @@ export function ServiceManagement() {
             duration_minutes: formData.duration_minutes,
             price: formData.price,
             is_active: formData.is_active,
+            show_on_homepage: formData.show_on_homepage,
           });
 
         if (error) throw error;
@@ -252,11 +258,20 @@ export function ServiceManagement() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label htmlFor="is_active">Exibir na tela inicial</Label>
+                <Label htmlFor="is_active">Disponível para agendamento</Label>
                 <Switch
                   id="is_active"
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label htmlFor="show_on_homepage">Exibir na tela inicial</Label>
+                <Switch
+                  id="show_on_homepage"
+                  checked={formData.show_on_homepage}
+                  onCheckedChange={(checked) => setFormData({ ...formData, show_on_homepage: checked })}
                 />
               </div>
             </div>
@@ -295,15 +310,16 @@ export function ServiceManagement() {
                   </div>
                   <div>
                     <h3 className="font-semibold">{service.name}</h3>
-                    <span className={`text-xs ${service.is_active ? 'text-success' : 'text-muted-foreground'}`}>
-                      {service.is_active ? 'Visível na tela inicial' : 'Oculto da tela inicial'}
-                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className={`text-xs ${service.is_active ? 'text-success' : 'text-muted-foreground'}`}>
+                        {service.is_active ? 'Disponível para agendamento' : 'Indisponível para agendamento'}
+                      </span>
+                      <span className={`text-xs ${service.show_on_homepage ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {service.show_on_homepage ? 'Visível na tela inicial' : 'Oculto da tela inicial'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <Switch
-                  checked={service.is_active}
-                  onCheckedChange={() => toggleActive(service)}
-                />
               </div>
 
               {service.description && (

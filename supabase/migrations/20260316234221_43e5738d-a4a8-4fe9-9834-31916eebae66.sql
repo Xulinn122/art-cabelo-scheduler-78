@@ -1,0 +1,1 @@
+ALTER TABLE public.services ADD COLUMN show_on_homepage boolean NOT NULL DEFAULT true;
