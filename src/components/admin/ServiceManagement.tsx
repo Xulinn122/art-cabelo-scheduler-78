@@ -39,6 +39,7 @@ export function ServiceManagement() {
     duration_minutes: 30,
     price: 0,
     is_active: true,
+    show_on_homepage: true,
   });
 
   useEffect(() => {
