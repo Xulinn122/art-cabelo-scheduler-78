@@ -72,6 +72,7 @@ export function ServiceManagement() {
         duration_minutes: service.duration_minutes,
         price: service.price,
         is_active: service.is_active,
+        show_on_homepage: service.show_on_homepage,
       });
     } else {
       setEditingService(null);
