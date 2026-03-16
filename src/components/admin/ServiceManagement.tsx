@@ -258,11 +258,20 @@ export function ServiceManagement() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label htmlFor="is_active">Exibir na tela inicial</Label>
+                <Label htmlFor="is_active">Disponível para agendamento</Label>
                 <Switch
                   id="is_active"
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label htmlFor="show_on_homepage">Exibir na tela inicial</Label>
+                <Switch
+                  id="show_on_homepage"
+                  checked={formData.show_on_homepage}
+                  onCheckedChange={(checked) => setFormData({ ...formData, show_on_homepage: checked })}
                 />
               </div>
             </div>
