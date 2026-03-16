@@ -110,6 +110,7 @@ export function ServiceManagement() {
             duration_minutes: formData.duration_minutes,
             price: formData.price,
             is_active: formData.is_active,
+            show_on_homepage: formData.show_on_homepage,
           })
           .eq('id', editingService.id);
 
