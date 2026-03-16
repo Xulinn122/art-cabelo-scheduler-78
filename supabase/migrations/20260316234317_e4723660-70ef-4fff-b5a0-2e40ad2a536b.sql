@@ -1,0 +1,2 @@
+DROP POLICY "Anyone can view active services" ON public.services;
+CREATE POLICY "Anyone can view available services" ON public.services FOR SELECT TO public USING (is_active = true OR show_on_homepage = true);
