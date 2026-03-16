@@ -252,7 +252,7 @@ export function ServiceManagement() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label htmlFor="is_active">Serviço Ativo</Label>
+                <Label htmlFor="is_active">Exibir na tela inicial</Label>
                 <Switch
                   id="is_active"
                   checked={formData.is_active}
@@ -296,7 +296,7 @@ export function ServiceManagement() {
                   <div>
                     <h3 className="font-semibold">{service.name}</h3>
                     <span className={`text-xs ${service.is_active ? 'text-success' : 'text-muted-foreground'}`}>
-                      {service.is_active ? 'Ativo' : 'Inativo'}
+                      {service.is_active ? 'Visível na tela inicial' : 'Oculto da tela inicial'}
                     </span>
                   </div>
                 </div>
