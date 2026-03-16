@@ -252,7 +252,7 @@ export function ServiceManagement() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Label htmlFor="is_active">Serviço Ativo</Label>
+                <Label htmlFor="is_active">Exibir na tela inicial</Label>
                 <Switch
                   id="is_active"
                   checked={formData.is_active}
