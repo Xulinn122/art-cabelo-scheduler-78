@@ -310,15 +310,16 @@ export function ServiceManagement() {
                   </div>
                   <div>
                     <h3 className="font-semibold">{service.name}</h3>
-                    <span className={`text-xs ${service.is_active ? 'text-success' : 'text-muted-foreground'}`}>
-                      {service.is_active ? 'Visível na tela inicial' : 'Oculto da tela inicial'}
-                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className={`text-xs ${service.is_active ? 'text-success' : 'text-muted-foreground'}`}>
+                        {service.is_active ? 'Disponível para agendamento' : 'Indisponível para agendamento'}
+                      </span>
+                      <span className={`text-xs ${service.show_on_homepage ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {service.show_on_homepage ? 'Visível na tela inicial' : 'Oculto da tela inicial'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <Switch
-                  checked={service.is_active}
-                  onCheckedChange={() => toggleActive(service)}
-                />
               </div>
 
               {service.description && (
