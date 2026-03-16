@@ -11,7 +11,8 @@ const serviceIcons: Record<string, React.ElementType> = {
 };
 
 export function ServicesSection() {
-  const { services, loading } = useServices();
+  const { services: allServices, loading } = useServices();
+  const services = allServices.filter(s => s.show_on_homepage);
 
   if (loading) {
     return (

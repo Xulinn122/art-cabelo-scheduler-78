@@ -23,6 +23,7 @@ interface Service {
   duration_minutes: number;
   price: number;
   is_active: boolean;
+  show_on_homepage: boolean;
 }
 
 export function ServiceManagement() {
