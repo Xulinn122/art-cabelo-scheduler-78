@@ -136,9 +136,16 @@ export function useAvailableSlots(
     const endTotalMin = endH * 60 + endM;
     const blocksNeeded = Math.ceil(serviceDuration / 30);
 
+    // Get current time for filtering past slots (only applies to today)
+    const now = new Date();
+    const isToday = date === `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const currentTotalMin = now.getHours() * 60 + now.getMinutes();
+
     const available = filteredSlots.filter(slot => {
       const [sh, sm] = slot.split(':').map(Number);
       const startMin = sh * 60 + sm;
+      // If today, filter out slots that have already passed
+      if (isToday && startMin <= currentTotalMin) return false;
       // Check service doesn't exceed working hours
       if (startMin + serviceDuration > endTotalMin) return false;
       // Check all required blocks are free
