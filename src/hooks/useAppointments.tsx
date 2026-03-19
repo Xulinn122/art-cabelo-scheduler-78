@@ -238,10 +238,11 @@ export function useCreateAppointment() {
         .single();
 
       if (insertError) {
+        console.error('Appointment insert error:', insertError);
         if (insertError.code === '23505') {
           setError('Este horário já está ocupado. Por favor, escolha outro horário.');
         } else {
-          setError('Erro ao criar agendamento. Tente novamente.');
+          setError(`Erro ao criar agendamento: ${insertError.message}`);
         }
         setLoading(false);
         return { success: false, data: null };
