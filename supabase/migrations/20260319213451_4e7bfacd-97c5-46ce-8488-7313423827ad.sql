@@ -1,0 +1,2 @@
+ALTER TABLE public.appointments DROP CONSTRAINT appointments_appointment_date_appointment_time_key;
+ALTER TABLE public.appointments ADD CONSTRAINT appointments_barber_date_time_unique UNIQUE (barber_id, appointment_date, appointment_time);
