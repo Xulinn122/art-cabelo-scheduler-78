@@ -247,7 +247,7 @@ export function useCreateAppointment() {
       }
 
       setLoading(false);
-      return { success: true, data };
+      return { success: true, data: null };
     } catch (err) {
       setError('Erro inesperado. Tente novamente.');
       setLoading(false);
