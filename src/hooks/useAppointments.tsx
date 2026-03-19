@@ -223,7 +223,7 @@ export function useCreateAppointment() {
     setError(null);
 
     try {
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('appointments')
         .insert({
           client_name: clientName,
@@ -233,9 +233,7 @@ export function useCreateAppointment() {
           appointment_date: appointmentDate,
           appointment_time: appointmentTime,
           user_id: userId || null,
-        })
-        .select()
-        .single();
+        });
 
       if (insertError) {
         console.error('Appointment insert error:', insertError);
@@ -249,7 +247,7 @@ export function useCreateAppointment() {
       }
 
       setLoading(false);
-      return { success: true, data };
+      return { success: true, data: null };
     } catch (err) {
       setError('Erro inesperado. Tente novamente.');
       setLoading(false);
