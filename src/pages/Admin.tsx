@@ -23,7 +23,8 @@ import {
   Users,
   Shield,
   Sparkles,
-  Settings
+  Settings,
+  ShoppingBag
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
