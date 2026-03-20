@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProducts, Product } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Loader2, ShoppingBag, DollarSign } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, ShoppingBag, DollarSign, Upload, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function ProductManagement() {
@@ -22,6 +22,9 @@ export function ProductManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -41,11 +44,53 @@ export function ProductManagement() {
         photo_url: product.photo_url || '',
         is_active: product.is_active,
       });
+      setPhotoPreview(product.photo_url || null);
     } else {
       setEditingProduct(null);
       setFormData({ name: '', description: '', price: 0, photo_url: '', is_active: true });
+      setPhotoPreview(null);
     }
     setDialogOpen(true);
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione um arquivo de imagem');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Imagem deve ter no máximo 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('product-photos')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('product-photos')
+        .getPublicUrl(fileName);
+
+      setFormData(prev => ({ ...prev, photo_url: urlData.publicUrl }));
+      setPhotoPreview(urlData.publicUrl);
+      toast.success('Foto enviada!');
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast.error('Erro ao enviar foto');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -162,14 +207,55 @@ export function ProductManagement() {
                 />
               </div>
 
+              {/* Photo upload */}
               <div className="space-y-2">
-                <Label htmlFor="prod-photo">URL da Foto</Label>
-                <Input
-                  id="prod-photo"
-                  placeholder="https://..."
-                  value={formData.photo_url}
-                  onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
+                <Label>Foto do Produto</Label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoUpload}
                 />
+                
+                {photoPreview ? (
+                  <div className="relative">
+                    <div className="aspect-video rounded-lg overflow-hidden bg-card border border-border">
+                      <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 w-full"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                    >
+                      {uploading ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Upload className="w-4 h-4 mr-2" />
+                      )}
+                      Trocar foto
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full aspect-video rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-card/50 flex flex-col items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    {uploading ? (
+                      <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
+                    ) : (
+                      <>
+                        <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Clique para enviar uma foto</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
@@ -205,9 +291,13 @@ export function ProductManagement() {
               key={product.id}
               className={`p-6 rounded-xl glass-card transition-all ${!product.is_active ? 'opacity-60' : ''}`}
             >
-              {product.photo_url && (
+              {product.photo_url ? (
                 <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-card">
                   <img src={product.photo_url} alt={product.name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="aspect-video rounded-lg mb-4 bg-card flex items-center justify-center">
+                  <ShoppingBag className="w-10 h-10 text-muted-foreground/30" />
                 </div>
               )}
               <div className="flex items-start justify-between mb-2">
