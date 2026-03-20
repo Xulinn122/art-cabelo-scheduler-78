@@ -162,6 +162,10 @@ export default function Admin() {
             <ServiceManagement />
           </TabsContent>
 
+          <TabsContent value="products">
+            <ProductManagement />
+          </TabsContent>
+
           <TabsContent value="barbers">
             <BarberManagement />
           </TabsContent>
