@@ -6,6 +6,7 @@ import { BarberManagement } from '@/components/admin/BarberManagement';
 import { AdminManagement } from '@/components/admin/AdminManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
 import { SettingsManagement } from '@/components/admin/SettingsManagement';
+import { ProductManagement } from '@/components/admin/ProductManagement';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
