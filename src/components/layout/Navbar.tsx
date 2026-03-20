@@ -71,6 +71,12 @@ export function Navbar({ onBookClick }: NavbarProps) {
             >
               Serviços
             </button>
+            <Link
+              to="/produtos"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              Produtos
+            </Link>
             <button
               onClick={() => scrollToSection('contact')}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -134,6 +140,13 @@ export function Navbar({ onBookClick }: NavbarProps) {
               >
                 Serviços
               </button>
+              <Link
+                to="/produtos"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-left py-2 text-muted-foreground hover:text-primary transition-colors"
+              >
+                Produtos
+              </Link>
               <button
                 onClick={() => scrollToSection('contact')}
                 className="text-left py-2 text-muted-foreground hover:text-primary transition-colors"

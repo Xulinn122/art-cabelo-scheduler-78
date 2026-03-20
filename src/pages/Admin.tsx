@@ -6,6 +6,7 @@ import { BarberManagement } from '@/components/admin/BarberManagement';
 import { AdminManagement } from '@/components/admin/AdminManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
 import { SettingsManagement } from '@/components/admin/SettingsManagement';
+import { ProductManagement } from '@/components/admin/ProductManagement';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,7 +23,8 @@ import {
   Users,
   Shield,
   Sparkles,
-  Settings
+  Settings,
+  ShoppingBag
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -78,7 +80,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-3xl grid-cols-5">
+          <TabsList className="grid w-full max-w-4xl grid-cols-6">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               <span className="hidden sm:inline">Agendamentos</span>
@@ -86,6 +88,10 @@ export default function Admin() {
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               <span className="hidden sm:inline">Serviços</span>
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4" />
+              <span className="hidden sm:inline">Produtos</span>
             </TabsTrigger>
             <TabsTrigger value="barbers" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
@@ -154,6 +160,10 @@ export default function Admin() {
 
           <TabsContent value="services">
             <ServiceManagement />
+          </TabsContent>
+
+          <TabsContent value="products">
+            <ProductManagement />
           </TabsContent>
 
           <TabsContent value="barbers">
