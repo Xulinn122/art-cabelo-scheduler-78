@@ -71,6 +71,12 @@ export function Navbar({ onBookClick }: NavbarProps) {
             >
               Serviços
             </button>
+            <Link
+              to="/produtos"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              Produtos
+            </Link>
             <button
               onClick={() => scrollToSection('contact')}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
