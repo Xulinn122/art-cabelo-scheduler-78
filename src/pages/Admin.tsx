@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAppointments } from '@/hooks/useAppointments';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { BarberManagement } from '@/components/admin/BarberManagement';
 import { AdminManagement } from '@/components/admin/AdminManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
