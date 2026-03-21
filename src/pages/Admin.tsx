@@ -35,6 +35,7 @@ export default function Admin() {
   const { appointments, loading, updateStatus, deleteAppointment } = useAdminAppointments();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('appointments');
+  useAdminNotifications();
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
