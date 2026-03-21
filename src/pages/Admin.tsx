@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAppointments } from '@/hooks/useAppointments';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { BarberManagement } from '@/components/admin/BarberManagement';
 import { AdminManagement } from '@/components/admin/AdminManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
@@ -34,6 +35,7 @@ export default function Admin() {
   const { appointments, loading, updateStatus, deleteAppointment } = useAdminAppointments();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('appointments');
+  useAdminNotifications();
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
